@@ -1,0 +1,39 @@
+@model IEnumerable<ArmoblaProject.Models.Transporte>
+
+@{
+    ViewData["Title"] = "Lista de Transportes";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<a asp-action="Create" class="btn btn-success mb-3">Agregar Transporte</a>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-info">@TempData["Mensaje"]</div>
+}
+
+<table class="table table-bordered">
+    <thead class="table-dark" style="background-color: #343a40; color: white;">
+        <tr>
+            <th>ID</th>
+            <th>Costo</th>
+            <th>¿Seleccionado?</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Costo</td>
+                <td>@(item.YTR ? "Sí" : "No")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

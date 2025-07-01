@@ -1,0 +1,12 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<h1 class="text-danger">Se produjo un error</h1>
+<h4 class="text-muted">Algo no salió como se esperaba.</h4>
+
+@if (!string.IsNullOrEmpty(Model?.RequestId))
+{
+    <p><strong>ID de la solicitud:</strong> <code>@Model.RequestId</code></p>
+}

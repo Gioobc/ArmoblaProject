@@ -1,0 +1,24 @@
+@{
+    ViewData["Title"] = "Ejecutar Evaluación de LINGO";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="mb-3">
+    <form asp-action="Run" method="post">
+        <button type="submit" class="btn btn-success">Ejecutar Modelo LINGO</button>
+    </form>
+</div>
+
+@if (ViewBag.Mensaje != null)
+{
+    <div class="alert alert-info">@ViewBag.Mensaje</div>
+}
+
+@if (ViewBag.Resultado != null)
+{
+    <h4>Resultado crudo de LINGO:</h4>
+    <pre style="background-color: #f8f9fa; padding: 15px; border: 1px solid #ccc;">
+    @ViewBag.Resultado
+        </pre>
+}
