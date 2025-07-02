@@ -5,7 +5,6 @@ namespace ArmoblaProject.Controllers
 {
     public class LingoController : Controller
     {
-        // GET: /Lingo/Run
         [HttpGet]
         [ActionName("Run")]
         public IActionResult RunGet()
@@ -13,73 +12,61 @@ namespace ArmoblaProject.Controllers
             return View();
         }
 
-        // POST: /Lingo/Run
         [HttpPost]
         public IActionResult Run()
         {
-            // Ruta al ejecutable de LINGO
-            string rutaLingoExe = @"C:\LINGO64_21\Lingo64_21.exe";
-
-            // Ruta al archivo del modelo .lng
-            string rutaModelo = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "lingo", "ArmoblaModel_IO.lng");
-
-            // Ruta donde LINGO escribirá los resultados
-            string rutaResultado = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "lingo", "resultado.txt");
+            string rutaLg4 = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "lingo", "ArmoblaModel_IO.lg4");
 
             try
             {
-                // Verificar existencia del ejecutable
-                if (!System.IO.File.Exists(rutaLingoExe))
+                if (!System.IO.File.Exists(rutaLg4))
                 {
-                    ViewBag.Mensaje = "No se encontró el ejecutable de LINGO.";
+                    ViewBag.Mensaje = "No se encontró el archivo del modelo (.lg4).";
                     return View();
                 }
 
-                // Verificar existencia del archivo del modelo
-                if (!System.IO.File.Exists(rutaModelo))
-                {
-                    ViewBag.Mensaje = "No se encontró el archivo del modelo (.lng).";
-                    return View();
-                }
-
-                // Eliminar resultado anterior si existe
-                if (System.IO.File.Exists(rutaResultado))
-                    System.IO.File.Delete(rutaResultado);
-
-                // Ejecutar LINGO con el archivo .lng
                 var proceso = new ProcessStartInfo
                 {
-                    FileName = rutaLingoExe,
-                    Arguments = $"\"{rutaModelo}\"", // Importante: usar comillas para rutas con espacios
-                    UseShellExecute = true,
-                    CreateNoWindow = true
+                    FileName = rutaLg4,
+                    UseShellExecute = true, // usa programa asociado (LINGO)
+                    CreateNoWindow = false
                 };
 
-                var proc = Process.Start(proceso);
-                proc?.WaitForExit();
+                Process.Start(proceso);
 
-                // Leer el resultado generado
-                if (System.IO.File.Exists(rutaResultado))
-                {
-                    var lineas = System.IO.File.ReadAllLines(rutaResultado);
-                    var resultadoFiltrado = lineas
-                        .Where(l => l.Contains("YA(") || l.Contains("YT(") || l.Contains("YTR(") || l.Contains("X("))
-                        .ToList();
-
-                    ViewBag.Resultado = string.Join(Environment.NewLine, resultadoFiltrado);
-                    ViewBag.Mensaje = "Evaluación ejecutada correctamente.";
-                }
-                else
-                {
-                    ViewBag.Mensaje = "La ejecución se completó, pero no se generó el archivo de resultados.";
-                }
+                ViewBag.Mensaje = "LINGO se ha abierto correctamente. Ejecuta el modelo manualmente y luego presiona 'Leer Resultado'.";
             }
             catch (Exception ex)
             {
-                ViewBag.Mensaje = $"Ocurrió un error al ejecutar el modelo: {ex.Message}";
+                ViewBag.Mensaje = $"Error al intentar abrir el archivo: {ex.Message}";
             }
 
             return View();
+        }
+
+        // Acción para leer resultado.txt manualmente
+        [HttpPost]
+        public IActionResult LeerResultado()
+        {
+            string rutaResultado = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "lingo", "resultado.txt");
+
+            if (System.IO.File.Exists(rutaResultado))
+            {
+                var lineas = System.IO.File.ReadAllLines(rutaResultado);
+                var resultadoFiltrado = lineas
+                    .Where(l => l.Contains("YA(") || l.Contains("YT(") || l.Contains("YTR(") || l.Contains("X("))
+                    .ToList();
+
+                ViewBag.Resultado = string.Join(Environment.NewLine, resultadoFiltrado);
+                ViewBag.Mensaje = "Resultados cargados desde LINGO.";
+            }
+            else
+            {
+                ViewBag.Mensaje = "No se encontró el archivo de resultados.";
+                ViewBag.Resultado = null;
+            }
+
+            return View("Run");
         }
     }
 }

@@ -1,12 +1,14 @@
-@{
-    ViewData["Title"] = "Ejecutar Evaluación de LINGO";
-}
-
 <h2>@ViewData["Title"]</h2>
 
 <div class="mb-3">
     <form asp-action="Run" method="post">
-        <button type="submit" class="btn btn-success">Ejecutar Modelo LINGO</button>
+        <button type="submit" class="btn btn-warning">Abrir LINGO (.lg4)</button>
+    </form>
+</div>
+
+<div class="mb-3">
+    <form asp-action="LeerResultado" method="post">
+        <button type="submit" class="btn btn-success">Leer Resultado</button>
     </form>
 </div>
 
@@ -17,10 +19,10 @@
 
 @if (ViewBag.Resultado != null)
 {
-    <h4>Resultado crudo de LINGO:</h4>
+    <h4>Resultado desde LINGO:</h4>
     <pre style="background-color: #f8f9fa; padding: 15px; border: 1px solid #ccc;">
-        @ViewBag.Resultado
-            </pre>
+    @ViewBag.Resultado
+        </pre>
 }
 
 <div class="mt-4">
@@ -28,4 +30,3 @@
         Regresar a Inicio
     </a>
 </div>
-
