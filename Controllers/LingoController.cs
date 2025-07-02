@@ -1,59 +1,42 @@
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using System.Text.RegularExpressions;
-using ArmoblaProject.Models;
+using System.Diagnostics;
 
 namespace ArmoblaProject.Controllers
 {
     public class LingoController : Controller
     {
-        private readonly ExcelWriterService _excel;
-
-        public LingoController(ExcelWriterService excel)
-        {
-            _excel = excel;
-        }
-
+        [HttpPost]
         public IActionResult Run()
         {
-            string pathResultado = @"C:\Ruta\resultado.txt";
-            string resultado = "No se encontró el resultado.";
+            string rutaLingoExe = @"C:\LINGO64_21\Lingo64_21.exe"; // Cambia por la ruta real de LINGO
+            string rutaModelo = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "lingo", "modelo.lng");
+            string rutaResultado = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "lingo", "resultado.txt");
 
-            if (System.IO.File.Exists(pathResultado))
+            // Asegúrate de eliminar resultado anterior
+            if (System.IO.File.Exists(rutaResultado))
+                System.IO.File.Delete(rutaResultado);
+
+            var proceso = new ProcessStartInfo
             {
-                resultado = System.IO.File.ReadAllText(pathResultado);
+                FileName = rutaLingoExe,
+                Arguments = $"\"{rutaModelo}\"",
+                RedirectStandardOutput = false,
+                UseShellExecute = true,
+                CreateNoWindow = true
+            };
 
-                // Extraer valores X(m,t)
-                var valoresX = ExtraerValoresX(resultado);
+            Process.Start(proceso)?.WaitForExit();
 
-                // Actualizar en Excel
-                _excel.ActualizarResultadoLingo(valoresX);
-                ViewBag.Mensaje = "Solución cargada y enviada a Excel.";
-            }
-            else
+            string resultado = "No se encontró resultado.";
+            if (System.IO.File.Exists(rutaResultado))
             {
-                ViewBag.Mensaje = "Archivo de resultado no encontrado.";
+                var lineas = System.IO.File.ReadAllLines(rutaResultado);
+                resultado = string.Join(Environment.NewLine, lineas
+                    .Where(l => l.Contains("YA") || l.Contains("YT") || l.Contains("YTR") || l.Contains("X(")));
             }
 
             ViewBag.Resultado = resultado;
             return View();
-        }
-
-        private Dictionary<(int, int), double> ExtraerValoresX(string texto)
-        {
-            var dic = new Dictionary<(int, int), double>();
-            var regex = new Regex(@"X\(\s*(\d+),\s*(\d+)\)\s+([\d\.]+)");
-
-            var matches = regex.Matches(texto);
-            foreach (Match m in matches)
-            {
-                int i = int.Parse(m.Groups[1].Value);
-                int j = int.Parse(m.Groups[2].Value);
-                double valor = double.Parse(m.Groups[3].Value);
-                dic[(i, j)] = valor;
-            }
-
-            return dic;
         }
     }
 }

@@ -1,0 +1,62 @@
+﻿@model IEnumerable<ArmoblaProject.Models.MuebleTipo>
+
+@{
+    ViewData["Title"] = "Catálogo de Muebles";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    @foreach (var item in Model)
+    {
+        string nombreImagen = "";
+        string descripcion = "";
+
+        if (item.MuebleId == 1 && item.TipoId == 1)
+        {
+            nombreImagen = "armario_melamina.jpg";
+            descripcion = "Armario de Melamina";
+        }
+        else if (item.MuebleId == 1 && item.TipoId == 2)
+        {
+            nombreImagen = "armario_mdf.jpg";
+            descripcion = "Armario de MDF";
+        }
+        else if (item.MuebleId == 2 && item.TipoId == 1)
+        {
+            nombreImagen = "centro_melamina.jpg";
+            descripcion = "Centro de Entretenimiento de Melamina";
+        }
+        else if (item.MuebleId == 2 && item.TipoId == 2)
+        {
+            nombreImagen = "centro_mdf.jpg";
+            descripcion = "Centro de Entretenimiento de MDF";
+        }
+
+        <div class="col">
+            <div class="card h-100">
+                @if (!string.IsNullOrEmpty(nombreImagen))
+                {
+                    <img src="~/images/@nombreImagen" class="card-img-top" alt="@descripcion" style="height: 200px; object-fit: cover;" />
+                }
+                <div class="card-body">
+                    <h5 class="card-title">@descripcion</h5>
+                    <ul class="list-unstyled">
+                        <li><strong>Utilidad:</strong> @item.Utilidad.ToString("C")</li>
+                        <li><strong>Costo Producción:</strong> @item.CostoProd.ToString("C")</li>
+                        <li><strong>Demanda:</strong> @item.Demanda</li>
+                        <li><strong>Máx. Fabricación:</strong> @item.CantMax</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+</div> <!-- cierre del div de tarjetas -->
+
+<div class="mt-4">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+        Regresar a Inicio
+    </a>
+</div>
