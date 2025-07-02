@@ -13,13 +13,9 @@ namespace ArmoblaProject.Models
         public DbSet<Transporte> Transportes { get; set; }
         public DbSet<Mueble> Muebles { get; set; }
         public DbSet<Tipo> Tipos { get; set; }
+        public DbSet<Material> Materiales { get; set; }
         public DbSet<MuebleTipo> MuebleTipos { get; set; }
-
-        // 👇 Aquí va el método para declarar la clave primaria compuesta
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<MuebleTipo>()
-                .HasKey(mt => new { mt.MuebleId, mt.TipoId });
-        }
+        public DbSet<MuebleMat> MuebleMats { get; set; }
+        public DbSet<Zona> Zonas { get; set; }
     }
 }
